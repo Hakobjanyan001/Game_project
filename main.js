@@ -4,7 +4,10 @@ const config = {
     height: 600,
     physics: {
         default: 'arcade',
-        arcade: { gravity: { y: 0 } }
+        arcade: { 
+            gravity: { y: 600 },
+            debug: false
+        }
     },
     scene: {
         preload: preload,
@@ -16,6 +19,9 @@ const config = {
 let player;
 let orb;
 let cursors;
+
+let platforms;
+let bell;
 
 // Arlo xax=i hamar
 let currentMission = 1;
@@ -43,7 +49,7 @@ function create() {
     player = this.physics.add.image(100, 300, 'ball');
     player.setCollideWorldBounds(true);
 
-    orb = this.physics.add.staticImage(700, 300, 'orb');
+    orb = this.physics.add.staticImage(600, 300, 'orb');
     orb.setTint(0xff0000); // funkcia vory ognma nkari guyny
 
     //Gexamej-y missia 2 
@@ -52,24 +58,47 @@ function create() {
     villageCenter.setAlpha(0); // minchev missia 1-i avarty antesaneli
 
     cursors = this.input.keyboard.createCursorKeys();
+
+    platforms = this.physics.add.staticGroup();
+
+    // Arlo-i hamar hartak
+    platforms.create(400, 500, 'orb').setScale(20, 1).refreshBody();
+
+    // Ashtaraki hartak
+    platforms.create(300, 450, 'orb');
+    platforms.create(250, 350, 'orb');
+    platforms.create(200, 250, 'orb');
+
+    // zangy ashtaraki vra
+    bell = this.physics.add.staticImage(200, 200, 'orb');
+    bell.setTint(0xffd700);
+    bell.setAlpha(0); // hmi taqcraca, kereva missia 3-i jamanak,
+
+    this.physics.add.collider(player, platforms); // Arloin hartaki hetenq kapium
 }
 
 function update() {
-    player.setVelocity(0); // erb stexn chka sexmac kangni inerciai tak chgna
-
-    if (cursors.left.isDown) player.setVelocityX(-200);
-    else if (cursors.right.isDown) player.setVelocityX(200);
+    if (cursors.left.isDown) {
+        player.setVelocityX(-200);
+    } else if (cursors.right.isDown) {
+        player.setVelocityX(200);
+    } else {
+        player.setVelocityX(0); // Կանգնեցնում ենք, եթե ոչինչ սեղմված չէ
+    }
     
-    if (cursors.up.isDown) player.setVelocityY(-200);
-    else if (cursors.down.isDown) player.setVelocityY(200);
+    if (cursors.up.isDown /*&& player.body.touching.down*/) {
+        player.setVelocityY(-450);
+    }
+
+    let distance = Phaser.Math.Distance.Between(player.x, player.y, orb.x, orb.y);
 
     if(currentMission == 1) {
         checkMission1(this);
     } else if(currentMission == 2) {
         checkMission2(this);
+    } else if(currentMission == 3) {
+        checkMission3(this);
     }
-
-    let distance = Phaser.Math.Distance.Between(player.x, player.y, orb.x, orb.y);
 
     if(currentMission >= 2) {
         orb.setVisible(false); // erb heruana kori
@@ -95,10 +124,19 @@ function checkMission1(scene) {
     }
 }
 
-function checkMission2() {
+function checkMission2(scene) {
     let distance = Phaser.Math.Distance.Between(player.x, player.y, villageCenter.x, villageCenter.y);
     if(distance < 20) {
         currentMission = 3; // hasav gexamej poxv ec 3-rd missa
         villageCenter.setTint(0xffffff);
+        bell.setAlpha(1); // zangy arden haytnvuma
+    }
+}
+
+function checkMission3(scene) {
+    let distance = Phaser.Math.Distance.Between(player.x, player.y, bell.x, bell.y);
+    if(distance < 20) {
+        currentMission = 4;
+        bell.setTint(0xff00ff); 
     }
 }
