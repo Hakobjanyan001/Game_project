@@ -71,7 +71,7 @@ function update() {
 
     let distance = Phaser.Math.Distance.Between(player.x, player.y, orb.x, orb.y);
 
-    if(currentMission >= 2 && distance > 100) {
+    if(currentMission >= 2) {
         orb.setVisible(false); // erb heruana kori
         orb.disableBody(true, true); // nev fizikapes kori baxumic ban charajana
     }
