@@ -22,19 +22,23 @@ let currentMission = 1;
 let missionText;
 let villageCenter;
 let missionStatus = "incomplete";
+let het_fon;
 
 const game = new Phaser.Game(config);
 
 function preload() {
     this.load.setBaseURL('https://labs.phaser.io');
     
+    // hetevi fony
     this.load.image('sky', 'assets/skies/space3.png');
+    this.load.image('sky2', 'assets/skies/space2.png');
+
     this.load.image('ball', 'assets/sprites/shinyball.png');
     this.load.image('orb', 'assets/sprites/aqua_ball.png');
 }
 
 function create() {
-    this.add.image(400, 300, 'sky');
+    het_fon = this.add.image(400, 300, 'sky');
 
     player = this.physics.add.image(100, 300, 'ball');
     player.setCollideWorldBounds(true);
@@ -60,9 +64,9 @@ function update() {
     else if (cursors.down.isDown) player.setVelocityY(200);
 
     if(currentMission == 1) {
-        checkMission1();
+        checkMission1(this);
     } else if(currentMission == 2) {
-        checkMission2();
+        checkMission2(this);
     }
 
     let distance = Phaser.Math.Distance.Between(player.x, player.y, orb.x, orb.y);
@@ -70,12 +74,10 @@ function update() {
     if(currentMission >= 2 && distance > 100) {
         orb.setVisible(false); // erb heruana kori
         orb.disableBody(true, true); // nev fizikapes kori baxumic ban charajana
-    } else {
-        orb.setVisible(true);
     }
 }
 
-function checkMission1() {
+function checkMission1(scene) {
     let distance = Phaser.Math.Distance.Between(player.x, player.y, orb.x, orb.y);
 
     if (distance < 20) {
@@ -83,6 +85,12 @@ function checkMission1() {
         
         orb.setTint(0x00ff00); 
 
+        scene.cameras.main.fadeOut(500, 0, 0); // ekrany sevana 500 milivarkyan
+        scene.cameras.main.once('camerafadeoutcomplete', () => {
+            het_fon.setTexture('sky2');
+            scene.cameras.main.fadeIn(500, 0, 0); // ekrany noric bacvi
+        })
+        
         villageCenter.setAlpha(1) //missa 1-i avarti verjum haytnvi missa 2-i skizby
     }
 }
