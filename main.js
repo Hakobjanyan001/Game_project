@@ -32,28 +32,28 @@ let het_fon;
 
 const game = new Phaser.Game(config);
 
-function preload() {
-    this.load.setBaseURL('https://labs.phaser.io');
-    
+function preload() {    
     // hetevi fony
-    this.load.image('sky', 'assets/skies/space3.png');
-    this.load.image('sky2', 'assets/skies/space2.png');
+    this.load.image('sky', 'https://labs.phaser.io/assets/skies/space3.png');
+    this.load.image('sky2', 'https://labs.phaser.io/assets/skies/space2.png');
 
-    this.load.image('ball', 'assets/sprites/shinyball.png');
-    this.load.image('orb', 'assets/sprites/aqua_ball.png');
+    this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.image('star', 'assets/star.png');
+    this.load.image('ball', 'https://labs.phaser.io/assets/sprites/shinyball.png');
+    this.load.image('orb', 'https://labs.phaser.io/assets/sprites/aqua_ball.png');
 }
 
 function create() {
     het_fon = this.add.image(400, 300, 'sky');
 
-    player = this.physics.add.image(100, 300, 'ball');
+    player = this.physics.add.sprite(100, 300, 'dude');
     player.setCollideWorldBounds(true);
 
     orb = this.physics.add.staticImage(600, 300, 'orb');
     orb.setTint(0xff0000); // funkcia vory ognma nkari guyny
 
     //Gexamej-y missia 2 
-    villageCenter = this.physics.add.staticImage(100,100, 'orb');
+    villageCenter = this.physics.add.staticImage(100,100, 'ball');
     villageCenter.setTint(0xffff00);
     villageCenter.setAlpha(0); // minchev missia 1-i avarty antesaneli
 
@@ -70,7 +70,7 @@ function create() {
     platforms.create(200, 250, 'orb');
 
     // zangy ashtaraki vra
-    bell = this.physics.add.staticImage(200, 200, 'orb');
+    bell = this.physics.add.staticImage(200, 200, 'star');
     bell.setTint(0xffd700);
     bell.setAlpha(0); // hmi taqcraca, kereva missia 3-i jamanak,
 
