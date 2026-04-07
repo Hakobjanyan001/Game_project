@@ -6,10 +6,8 @@ export default class Demo extends Phaser.Scene {
     }
 
     preload() {
-        // Tilemap (map_1.json)
         this.load.tilemapTiledJSON('map1', '../assets/map_1.json');
 
-        // Tilesets
         this.load.image('Tileset_TallGrass', '../My project assets/Grass and trees/Tileset_TallGrass.png');
         this.load.image('Tileset_Water', '../My project assets/Water/Tileset_Water.png');
         this.load.image('Waterfall', '../My project assets/Water/Waterfall.png');
@@ -18,12 +16,13 @@ export default class Demo extends Phaser.Scene {
         this.load.image('Atlas_Buildings_Bridges', '../My project assets/Buildings/Atlas_Buildings_Bridges.png');
         this.load.image('Rocks', '../My project assets/Rocks/Rocks.png');
 
-        // Sky backgrounds for other missions
         this.load.image('sky2', 'https://labs.phaser.io/assets/skies/space2.png');
         this.load.image('sky3', 'assets/sky.png');
-
-        // Player & objects
         this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
+        this.load.image('platform1', 'assets/platform.png');
+        this.load.image('platform2', 'assets/platform.png');
+        this.load.image('platform3', 'assets/platform.png');
+        this.load.image('platform4', 'assets/platform.png');
         this.load.image('star', 'assets/star.png');
         this.load.image('ball', 'https://labs.phaser.io/assets/sprites/shinyball.png');
         this.load.image('orb', 'https://labs.phaser.io/assets/sprites/aqua_ball.png');
@@ -36,9 +35,7 @@ export default class Demo extends Phaser.Scene {
     }
 
     create() {
-        // --- Build the tilemap (Mission 1 background) ---
         const map = this.make.tilemap({ key: 'map1' });
-
         const tsTallGrass = map.addTilesetImage('Tileset_TallGrass', 'Tileset_TallGrass');
         const tsWater = map.addTilesetImage('Tileset_Water', 'Tileset_Water');
         const tsWaterfall = map.addTilesetImage('Waterfall', 'Waterfall');
@@ -46,26 +43,46 @@ export default class Demo extends Phaser.Scene {
         const tsBuildings = map.addTilesetImage('Atlas_Buildings_Wood_LightGreen', 'Atlas_Buildings_Wood_LightGreen');
         const tsBridges = map.addTilesetImage('Atlas_Buildings_Bridges', 'Atlas_Buildings_Bridges');
         const tsRocks = map.addTilesetImage('Rocks', 'Rocks');
-
         const allTilesets = [tsTallGrass, tsWater, tsWaterfall, tsTrees, tsBuildings, tsBridges, tsRocks];
 
-        // Create every layer defined in Tiled
-        this.mapLayers = [];
-        map.layers.forEach(layerData => {
-            const layer = map.createLayer(layerData.name, allTilesets, 0, 0);
-            if (layer) this.mapLayers.push(layer);
+        this.mapLayer1 = map.createLayer('\u0540\u0565\u057f\u056b\u0576 \u0586\u0578\u0576_1', allTilesets, 0, 0);
+        this.mapLayer2 = map.createLayer('\u0540\u0565\u057f\u056b\u0576 \u0586\u0578\u0576_2', allTilesets, 0, 0);
+        this.mapLayer3 = map.createLayer('\u0540\u0565\u057f\u056b\u0576 \u0586\u0578\u0576 _3', allTilesets, 0, 0);
+        this.mapLayer4 = map.createLayer('\u053f\u0561\u057c\u0578\u0582\u0575\u0581\u0576\u0565\u0580_1', allTilesets, 0, 0);
+
+        const scaleX = 800 / (map.widthInPixels);
+        const scaleY = 600 / (map.heightInPixels);
+        [this.mapLayer1, this.mapLayer2, this.mapLayer3, this.mapLayer4].forEach(l => {
+            if (l) l.setScale(scaleX, scaleY);
         });
 
-        // Sky images used in later missions (hidden at start)
-        this.het_fon = this.add.image(400, 300, 'sky2').setVisible(false);
+        this.bgSky2 = this.add.image(400, 300, 'sky2').setVisible(false).setDepth(0);
+        this.bgSky3 = this.add.image(400, 300, 'sky3').setVisible(false).setDepth(0);
 
-        // --- Player ---
-        this.player = this.physics.add.sprite(100, 300, 'dude');
+        const mapLayers = [this.mapLayer1, this.mapLayer2, this.mapLayer3, this.mapLayer4];
+        this.het_fon = {
+            setTexture: (key) => {
+                mapLayers.forEach(l => l && l.setVisible(false));
+                this.bgSky2.setVisible(false);
+                this.bgSky3.setVisible(false);
+                if (key === 'sky2') this.bgSky2.setVisible(true);
+                else if (key === 'sky3') this.bgSky3.setVisible(true);
+            }
+        };
+
+        this.player = this.physics.add.sprite(200, 460, 'dude').setDepth(1);
         this.player.setCollideWorldBounds(true);
+
+        this.platforms = this.physics.add.staticGroup();
+        this.platforms.create(10, 410, 'platform1').setScale(2, 0.1).setAlpha(0).refreshBody();
+        this.platforms.create(10, 490, 'platform2').setScale(1.7, 0.1).setAlpha(0).refreshBody();
+
+        this.platforms.setVisible(true);
+        this.physics.add.collider(this.player, this.platforms);
+
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        // --- Mission objects ---
-        this.orb = this.physics.add.staticImage(600, 300, 'orb').setTint(0xff0000).setVisible(true);
+        this.orb = this.physics.add.staticImage(350, 470, 'orb').setTint(0xff0000).setVisible(true);
         this.villageCenter = this.physics.add.staticImage(100, 100, 'ball').setTint(0xffff00).setVisible(false);
         this.bell = this.physics.add.staticImage(200, 200, 'star').setTint(0xffd700).setVisible(false);
         this.robot = this.physics.add.sprite(400, 200, 'robot').setScale(0.8).setVisible(false);
@@ -90,13 +107,6 @@ export default class Demo extends Phaser.Scene {
         this.villager = this.add.image(700, 500, 'villager').setVisible(false);
 
         this.createAnimations();
-    }
-
-    // Call this from Mission.js when leaving mission 1 to hide the tilemap
-    hideTilemap() {
-        if (this.mapLayers) {
-            this.mapLayers.forEach(layer => layer.setVisible(false));
-        }
     }
 
     createAnimations() {
@@ -137,18 +147,6 @@ export default class Demo extends Phaser.Scene {
             this.robot.y = this.player.y;
         }
 
-        this.checkMissions();
-    }
-
-    checkMissions() {
-        if (this.currentMission == 5) {
-            this.farmer.setVisible(true);
-            this.basket.setVisible(true);
-            this.appleScoreText.setVisible(true);
-            if (this.apples.getLength() == 0 && this.applesCollected == 0) {
-                this.spawnApples();
-            }
-        }
         this.missions.update();
     }
 
