@@ -15,7 +15,7 @@ export default class MissionManager {
 
     checkMission1() {
         const s = this.scene;
-        if (!s.isTransitioning && Phaser.Math.Distance.Between(s.player.x, s.player.y, s.orb.x, s.orb.y) < 30) {
+        if (Phaser.Math.Distance.Between(s.player.x, s.player.y, s.orb.x, s.orb.y) < 30) {
             s.isTransitioning = true;
             s.orb.setVisible(false).disableBody(true, true);
             s.currentMission = 2;
@@ -28,7 +28,6 @@ export default class MissionManager {
                 s.het_fon.setTexture('sky2');
                 s.player.setPosition(260, 240);
                 s.player.anims.play('turn');
-                s.input.keyboard.enabled = true;
                 s.cameras.main.fadeIn(500, 0, 0, 0);
             });
         }
@@ -36,67 +35,40 @@ export default class MissionManager {
 
     checkMission2() {
         const s = this.scene;
-        if (!s.isTransitioning && Phaser.Math.Distance.Between(s.player.x, s.player.y, s.villageCenter.x, s.villageCenter.y) < 30) {
+        if (Phaser.Math.Distance.Between(s.player.x, s.player.y, s.villageCenter.x, s.villageCenter.y) < 30) {
             s.isTransitioning = true;
             s.villageCenter.setVisible(false).disableBody(true, true);
-            s.input.keyboard.enabled = false;
 
-            s.tweens.chain({
-                targets: s.player,
-                tweens: [
-                    {
-                        x: 20,
-                        duration: 1000,
-                        onStart: () => s.player.anims.play('left', true),
-                        onComplete: () => {
-                            s.currentMission = 3;
-                            s.isTransitioning = false;
-                            s.cameras.main.fadeOut(500, 0, 0, 0);
-                            s.cameras.main.once('camerafadeoutcomplete', () => {
-                                s.bell.setVisible(true);
-                                s.het_fon.setTexture('sky3');
-                                s.player.setPosition(200, 100);
-                                s.player.anims.play('turn');
-                                s.input.keyboard.enabled = true;
-                                s.cameras.main.fadeIn(500, 0, 0, 0);
-                            });
-                        }
-                    }
-                ]
+            s.currentMission = 3;
+            s.isTransitioning = false;
+            s.cameras.main.fadeOut(500, 0, 0, 0);
+            s.cameras.main.once('camerafadeoutcomplete', () => {
+                s.bell.setVisible(true);
+                s.het_fon.setTexture('sky3');
+                s.player.setPosition(200, 100);
+                s.player.anims.play('turn');
+                s.cameras.main.fadeIn(500, 0, 0, 0);
             });
         }
     }
 
     checkMission3() {
         const s = this.scene;
-        if (!s.isTransitioning && Phaser.Math.Distance.Between(s.player.x, s.player.y, s.bell.x, s.bell.y) < 30) {
+        if (Phaser.Math.Distance.Between(s.player.x, s.player.y, s.bell.x, s.bell.y) < 30) {
             s.isTransitioning = true;
-            s.input.keyboard.enabled = false;
-            s.tweens.chain({
-                targets: s.player,
-                tweens: [
-                    {
-                        x: 780,
-                        duration: 2000,
-                        onStart: () => s.player.anims.play('right', true),
-                        onComplete: () => {
-                            s.currentMission = 4;
-                            s.isTransitioning = false;
-                            s.cameras.main.fadeOut(500, 0, 0, 0);
-                            s.cameras.main.once('camerafadeoutcomplete', () => {
-                                s.bell.setTint(0xff00ff);
-                                s.robot.setVisible(true);
-                                s.lever.setVisible(true);
-                                s.bell.setVisible(false);
-                                s.het_fon.setTexture('sky2');
-                                s.player.setPosition(10, 400);
-                                s.player.anims.play('turn');
-                                s.input.keyboard.enabled = true;
-                                s.cameras.main.fadeIn(500, 0, 0, 0);
-                            });
-                        }
-                    }
-                ]
+
+            s.currentMission = 4;
+            s.isTransitioning = false;
+            s.cameras.main.fadeOut(500, 0, 0, 0);
+            s.cameras.main.once('camerafadeoutcomplete', () => {
+                s.bell.setTint(0xff00ff);
+                s.robot.setVisible(true);
+                s.lever.setVisible(true);
+                s.bell.setVisible(false);
+                s.het_fon.setTexture('sky2');
+                s.player.setPosition(10, 400);
+                s.player.anims.play('turn');
+                s.cameras.main.fadeIn(500, 0, 0, 0);
             });
         }
     }
@@ -104,35 +76,22 @@ export default class MissionManager {
     checkMission4() {
         const s = this.scene;
         let distance = Phaser.Math.Distance.Between(s.robot.x, s.robot.y, s.lever.x, s.lever.y);
-        if (!s.isTransitioning && s.isRobotFollow && distance < 40) {
+        if (s.isRobotFollow && distance < 40) {
             s.isTransitioning = true;
-            s.input.keyboard.enabled = false;
-            s.tweens.chain({
-                targets: s.player,
-                tweens: [
-                    {
-                        x: 780,
-                        duration: 1000,
-                        onStart: () => s.player.anims.play('right', true),
-                        onComplete: () => {
-                            s.currentMission = 5;
-                            s.isTransitioning = false;
-                            s.cameras.main.fadeOut(500, 0, 0, 0);
-                            s.cameras.main.once('camerafadeoutcomplete', () => {
-                                s.lever.setTint(0x00ff00);
-                                s.isRobotFollow = false;
-                                s.robot.setPosition(s.lever.x, s.lever.y);
-                                s.robot.setVisible(false);
-                                s.lever.setVisible(false);
-                                s.het_fon.setTexture('sky3');
-                                s.player.setPosition(40, 250);
-                                s.player.anims.play('turn');
-                                s.input.keyboard.enabled = true;
-                                s.cameras.main.fadeIn(500, 0, 0, 0);
-                            });
-                        }
-                    }
-                ]
+
+            s.currentMission = 5;
+            s.isTransitioning = false;
+            s.cameras.main.fadeOut(500, 0, 0, 0);
+            s.cameras.main.once('camerafadeoutcomplete', () => {
+                s.lever.setTint(0x00ff00);
+                s.isRobotFollow = false;
+                s.robot.setPosition(s.lever.x, s.lever.y);
+                s.robot.setVisible(false);
+                s.lever.setVisible(false);
+                s.het_fon.setTexture('sky3');
+                s.player.setPosition(40, 250);
+                s.player.anims.play('turn');
+                s.cameras.main.fadeIn(500, 0, 0, 0);
             });
         }
     }
@@ -147,49 +106,27 @@ export default class MissionManager {
         }
         s.physics.overlap(s.player, s.apples, (player, apple) => {
             apple.disableBody(true, false);
-            s.tweens.add({
-                targets: apple,
-                x: s.basket.x,
-                y: s.basket.y,
-                scale: 0.2,
-                duration: 500,
-                ease: 'Power2',
-                onComplete: () => {
-                    apple.destroy();
-                    s.applesCollected++;
-                    s.appleScoreText.setText('Apples: ' + s.applesCollected);
-                    s.basket.setTint(0xffff00);
-                    if (s.applesCollected >= 5 && !s.isTransitioning) {
-                        s.isTransitioning = true;
-                        s.input.keyboard.enabled = false;
-                        s.tweens.chain({
-                            targets: s.player,
-                            tweens: [
-                                {
-                                    x: 780,
-                                    duration: 1500,
-                                    onStart: () => s.player.anims.play('right', true),
-                                    onComplete: () => {
-                                        s.currentMission = 6;
-                                        s.isTransitioning = false;
-                                        s.cameras.main.fadeOut(500, 0, 0, 0);
-                                        s.cameras.main.once('camerafadeoutcomplete', () => {
-                                            s.farmer.setVisible(false);
-                                            s.basket.setVisible(false);
-                                            s.appleScoreText.setVisible(false);
-                                            s.het_fon.setTexture('sky2');
-                                            s.player.setPosition(70, 350);
-                                            s.player.anims.play('turn');
-                                            s.input.keyboard.enabled = true;
-                                            s.cameras.main.fadeIn(500, 0, 0, 0);
-                                        });
-                                    }
-                                }
-                            ]
-                        });
-                    }
-                }
-            });
+            apple.destroy();
+            s.applesCollected++;
+            s.appleScoreText.setText('Apples: ' + s.applesCollected);
+            s.basket.setTint(0xffff00);
+
+            if (s.applesCollected >= 5 && !s.isTransitioning) {
+                s.isTransitioning = true;
+
+                s.currentMission = 6;
+                s.isTransitioning = false;
+                s.cameras.main.fadeOut(500, 0, 0, 0);
+                s.cameras.main.once('camerafadeoutcomplete', () => {
+                    s.farmer.setVisible(false);
+                    s.basket.setVisible(false);
+                    s.appleScoreText.setVisible(false);
+                    s.het_fon.setTexture('sky2');
+                    s.player.setPosition(70, 350);
+                    s.player.anims.play('turn');
+                    s.cameras.main.fadeIn(500, 0, 0, 0);
+                });
+            }
         });
     }
 

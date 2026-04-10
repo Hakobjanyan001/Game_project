@@ -6,16 +6,17 @@ export default class Demo extends Phaser.Scene {
     }
 
     preload() {
-        this.load.tilemapTiledJSON('map1', '../assets/map_1.json');
-        this.load.tilemapTiledJSON('map2', '../assets/map_2.json');
+        this.load.setBaseURL('');
+        this.load.tilemapTiledJSON('map1', 'assets/map_1.json');
+        this.load.tilemapTiledJSON('map2', 'assets/map_2.json');
 
-        this.load.image('Tileset_TallGrass', '../My project assets/Grass and trees/Tileset_TallGrass.png');
-        this.load.image('Tileset_Water', '../My project assets/Water/Tileset_Water.png');
-        this.load.image('Waterfall', '../My project assets/Water/Waterfall.png');
-        this.load.image('Atlas_Trees_Bushes', '../My project assets/Grass and trees/Atlas_Trees_Bushes.png');
-        this.load.image('Atlas_Buildings_Wood_LightGreen', '../My project assets/Buildings/Atlas_Buildings_Wood_LightGreen.png');
-        this.load.image('Atlas_Buildings_Bridges', '../My project assets/Buildings/Atlas_Buildings_Bridges.png');
-        this.load.image('Rocks', '../My project assets/Rocks/Rocks.png');
+        this.load.image('Tileset_TallGrass', 'My project assets/Grass and trees/Tileset_TallGrass.png');
+        this.load.image('Tileset_Water', 'My project assets/Water/Tileset_Water.png');
+        this.load.image('Waterfall', 'My project assets/Water/Waterfall.png');
+        this.load.image('Atlas_Trees_Bushes', 'My project assets/Grass and trees/Atlas_Trees_Bushes.png');
+        this.load.image('Atlas_Buildings_Wood_LightGreen', 'My project assets/Buildings/Atlas_Buildings_Wood_LightGreen.png');
+        this.load.image('Atlas_Buildings_Bridges', 'My project assets/Buildings/Atlas_Buildings_Bridges.png');
+        this.load.image('Rocks', 'My project assets/Rocks/Rocks.png');
 
         this.load.image('sky2', 'https://labs.phaser.io/assets/skies/space2.png');
         this.load.image('sky3', 'assets/sky.png');
@@ -25,15 +26,15 @@ export default class Demo extends Phaser.Scene {
         this.load.image('platform3', 'assets/platform.png');
         this.load.image('platform4', 'assets/platform.png');
         this.load.image('star', 'assets/star.png');
-        this.load.image('ball', 'assets/shinyball.png');
-        this.load.image('orb', 'assets/aqua_ball.png');
-        this.load.image('robot', 'assets/exocet_spaceshipship.png');
-        this.load.image('lever', 'assets/clown.png');
-        this.load.image('farmer', 'assets/phi_hammer.png');
-        this.load.image('apple', 'assets/apple.png');
-        this.load.image('basket', 'assets/basket.png');
-        this.load.image('villager', 'assets/fof.png');
-        this.load.image('Buildings_Settlement', '../My project assets/Buildings/Buildings_Settlement.png');
+        this.load.image('ball', 'https://labs.phaser.io/assets/sprites/shinyball.png');
+        this.load.image('orb', 'https://labs.phaser.io/assets/sprites/aqua_ball.png');
+        this.load.image('robot', 'https://labs.phaser.io/assets/sprites/exocet_spaceship.png');
+        this.load.image('lever', 'https://labs.phaser.io/assets/sprites/clown.png');
+        this.load.image('farmer', 'https://labs.phaser.io/assets/sprites/pangball.png'); // placeholder since phi_hammer missing
+        this.load.image('apple', 'https://labs.phaser.io/assets/sprites/apple.png');
+        this.load.image('basket', 'https://labs.phaser.io/assets/sprites/melon.png'); // placeholder since basket missing
+        this.load.image('villager', 'https://labs.phaser.io/assets/sprites/ghost.png'); // placeholder since fof missing
+        this.load.image('Buildings_Settlement', 'My project assets/Buildings/Buildings_Settlement.png');
     }
 
     create() {
