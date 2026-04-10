@@ -7,6 +7,7 @@ export default class Demo extends Phaser.Scene {
 
     preload() {
         this.load.tilemapTiledJSON('map1', '../assets/map_1.json');
+        this.load.tilemapTiledJSON('map2', '../assets/map_2.json');
 
         this.load.image('Tileset_TallGrass', '../My project assets/Grass and trees/Tileset_TallGrass.png');
         this.load.image('Tileset_Water', '../My project assets/Water/Tileset_Water.png');
@@ -24,17 +25,19 @@ export default class Demo extends Phaser.Scene {
         this.load.image('platform3', 'assets/platform.png');
         this.load.image('platform4', 'assets/platform.png');
         this.load.image('star', 'assets/star.png');
-        this.load.image('ball', 'https://labs.phaser.io/assets/sprites/shinyball.png');
-        this.load.image('orb', 'https://labs.phaser.io/assets/sprites/aqua_ball.png');
-        this.load.image('robot', 'https://labs.phaser.io/assets/sprites/exocet_spaceshipship.png');
-        this.load.image('lever', 'https://labs.phaser.io/assets/sprites/clown.png');
-        this.load.image('farmer', 'https://labs.phaser.io/assets/sprites/phi_hammer.png');
-        this.load.image('apple', 'https://labs.phaser.io/assets/sprites/apple.png');
-        this.load.image('basket', 'https://labs.phaser.io/assets/sprites/basket.png');
-        this.load.image('villager', 'https://labs.phaser.io/assets/sprites/fof.png');
+        this.load.image('ball', 'assets/shinyball.png');
+        this.load.image('orb', 'assets/aqua_ball.png');
+        this.load.image('robot', 'assets/exocet_spaceshipship.png');
+        this.load.image('lever', 'assets/clown.png');
+        this.load.image('farmer', 'assets/phi_hammer.png');
+        this.load.image('apple', 'assets/apple.png');
+        this.load.image('basket', 'assets/basket.png');
+        this.load.image('villager', 'assets/fof.png');
+        this.load.image('Buildings_Settlement', '../My project assets/Buildings/Buildings_Settlement.png');
     }
 
     create() {
+        this.isTransitioning = false;
         const map = this.make.tilemap({ key: 'map1' });
         const tsTallGrass = map.addTilesetImage('Tileset_TallGrass', 'Tileset_TallGrass');
         const tsWater = map.addTilesetImage('Tileset_Water', 'Tileset_Water');
@@ -45,10 +48,10 @@ export default class Demo extends Phaser.Scene {
         const tsRocks = map.addTilesetImage('Rocks', 'Rocks');
         const allTilesets = [tsTallGrass, tsWater, tsWaterfall, tsTrees, tsBuildings, tsBridges, tsRocks];
 
-        this.mapLayer1 = map.createLayer('\u0540\u0565\u057f\u056b\u0576 \u0586\u0578\u0576_1', allTilesets, 0, 0);
-        this.mapLayer2 = map.createLayer('\u0540\u0565\u057f\u056b\u0576 \u0586\u0578\u0576_2', allTilesets, 0, 0);
-        this.mapLayer3 = map.createLayer('\u0540\u0565\u057f\u056b\u0576 \u0586\u0578\u0576 _3', allTilesets, 0, 0);
-        this.mapLayer4 = map.createLayer('\u053f\u0561\u057c\u0578\u0582\u0575\u0581\u0576\u0565\u0580_1', allTilesets, 0, 0);
+        this.mapLayer1 = map.createLayer('Հետին ֆոն_1', allTilesets, 0, 0);
+        this.mapLayer2 = map.createLayer('Հետին ֆոն_2', allTilesets, 0, 0);
+        this.mapLayer3 = map.createLayer('Հետին ֆոն _3', allTilesets, 0, 0);
+        this.mapLayer4 = map.createLayer('Կառույցներ_1', allTilesets, 0, 0);
 
         const scaleX = 800 / (map.widthInPixels);
         const scaleY = 600 / (map.heightInPixels);
@@ -56,17 +59,19 @@ export default class Demo extends Phaser.Scene {
             if (l) l.setScale(scaleX, scaleY);
         });
 
+        this.mapLayers = [this.mapLayer1, this.mapLayer2, this.mapLayer3, this.mapLayer4];
+
         this.bgSky2 = this.add.image(400, 300, 'sky2').setVisible(false).setDepth(0);
         this.bgSky3 = this.add.image(400, 300, 'sky3').setVisible(false).setDepth(0);
 
-        const mapLayers = [this.mapLayer1, this.mapLayer2, this.mapLayer3, this.mapLayer4];
         this.het_fon = {
             setTexture: (key) => {
-                mapLayers.forEach(l => l && l.setVisible(false));
-                this.bgSky2.setVisible(false);
-                this.bgSky3.setVisible(false);
-                if (key === 'sky2') this.bgSky2.setVisible(true);
-                else if (key === 'sky3') this.bgSky3.setVisible(true);
+                if (key === 'sky2' || key === 'map2') this.changeMap('map2');
+                else if (key === 'sky3') {
+                    this.mapLayers.forEach(l => l && l.setVisible(false));
+                    this.bgSky2.setVisible(false);
+                    this.bgSky3.setVisible(true);
+                }
             }
         };
 
@@ -90,6 +95,7 @@ export default class Demo extends Phaser.Scene {
 
         this.currentMission = 1;
         this.isRobotFollow = false;
+        this.orbCollected = false;
 
         this.physics.add.overlap(this.player, this.robot, () => {
             if (this.currentMission == 4) this.isRobotFollow = true;
@@ -148,6 +154,50 @@ export default class Demo extends Phaser.Scene {
         }
 
         this.missions.update();
+    }
+
+    changeMap(mapKey) {
+        this.mapLayers.forEach(l => l && l.destroy());
+        this.mapLayers = [];
+
+        const map = this.make.tilemap({ key: mapKey });
+
+        // Tileset Name mapping between JSON and preloaded keys
+        const tilesetMapping = {
+            'Tileset_TallGrass': 'Tileset_TallGrass',
+            'Tileset_Water': 'Tileset_Water',
+            'Waterfall': 'Waterfall',
+            'Atlas_Trees_Bushes': 'Atlas_Trees_Bushes',
+            'Atlas_Buildings_Wood_LightGreen': 'Atlas_Buildings_Wood_LightGreen',
+            'Atlas_Buildings_Bridges': 'Atlas_Buildings_Bridges',
+            'Rocks': 'Rocks',
+            // Map 2 specifics (using Unicode escape \u058A for the Armenian hyphen ՝)
+            'Grass_2': 'Tileset_TallGrass',
+            'Trees_2': 'Atlas_Trees_Bushes',
+            'Rocks\u058A2': 'Rocks',
+            'Atlas_Buildings_2': 'Atlas_Buildings_Bridges',
+            'Buildings_Settlement\u058A2': 'Buildings_Settlement',
+            'Atlas_Buildings_Wood_LightGreen-2': 'Atlas_Buildings_Wood_LightGreen'
+        };
+
+        const activeTilesets = [];
+        map.tilesets.forEach(ts => {
+            const imageKey = tilesetMapping[ts.name] || ts.name;
+            const phaserTs = map.addTilesetImage(ts.name, imageKey);
+            if (phaserTs) activeTilesets.push(phaserTs);
+        });
+
+        const scaleX = 800 / map.widthInPixels;
+        const scaleY = 600 / map.heightInPixels;
+
+        map.layers.forEach(layerData => {
+            const l = map.createLayer(layerData.name, activeTilesets, 0, 0);
+            if (l) {
+                l.setScale(scaleX, scaleY);
+                l.setDepth(0);
+                this.mapLayers.push(l);
+            }
+        });
     }
 
     spawnApples() {
